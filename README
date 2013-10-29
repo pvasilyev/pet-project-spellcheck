@@ -1,1 +1,8 @@
-This file was created by IntelliJ IDEA 12.1.6 for binding GitHub repository
+This project is the prototype of non-lucene spell-check algorithm.
+Mainly it is based on idea of hashing strings into 64-bit longs.
+
+More information you can find here (some useful links):
+* http://qr.ae/NVIiA
+* http://wiki.apache.org/lucene-java/SpellChecker
+* http://en.wikipedia.org/wiki/N-gram
+* http://en.wikipedia.org/wiki/Levenshtein_distance
