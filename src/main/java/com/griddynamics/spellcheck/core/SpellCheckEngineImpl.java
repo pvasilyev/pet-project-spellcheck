@@ -7,7 +7,7 @@ package com.griddynamics.spellcheck.core;
 public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
 
     @Override
-    public String[] suggestSimilar(final String word, final int suggestionsNumber) {
+    public String[] suggestSimilar(final String word, final int suggestionsNumber, final float accuracy) {
         return new String[0];
     }
 }

@@ -10,6 +10,8 @@ public interface SpellCheckEngine {
 
     String[] suggestSimilar(String word, int suggestionsNumber);
 
+    String[] suggestSimilar(String word, int suggestionsNumber, float accuracy);
+
     void indexDictionary(Dictionary dictionary);
 
 }

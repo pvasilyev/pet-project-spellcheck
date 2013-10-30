@@ -30,11 +30,19 @@ public class NaiveSpellCheckEngineTest {
         Assert.assertNotNull(suggests1);
         Assert.assertEquals(1, suggests1.length);
         Assert.assertEquals("accord", suggests1[0]);
+    }
 
-        final String[] suggests2 = engineToTest.suggestSimilar("isatop", 1);
+    @Test
+    public void testSpellCheckWithAccuracy() throws Exception {
+        Assert.assertNotNull(engineToTest);
+
+        final String[] suggests1 = engineToTest.suggestSimilar("isatop", 1);
+        Assert.assertNotNull(suggests1);
+        Assert.assertEquals(0, suggests1.length);
+
+        final String[] suggests2 = engineToTest.suggestSimilar("isatop", 1, 0.5F);
         Assert.assertNotNull(suggests2);
         Assert.assertEquals(1, suggests2.length);
         Assert.assertEquals("isotope", suggests2[0]);
     }
-
 }

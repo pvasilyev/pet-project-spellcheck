@@ -36,9 +36,9 @@ public class NaiveSpellCheckEngine extends AbstractSpellCheckEngine {
     }
 
     @Override
-    public String[] suggestSimilar(final String word, final int suggestionsNumber) {
+    public String[] suggestSimilar(final String word, final int suggestionsNumber, final float accuracy) {
         try {
-            return spellChecker.suggestSimilar(word, suggestionsNumber);
+            return spellChecker.suggestSimilar(word, suggestionsNumber, accuracy);
         } catch (IOException e) {
             return new String[]{};
         }
