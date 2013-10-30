@@ -10,30 +10,30 @@ import org.junit.Test;
  * @author pvasilyev
  * @since 30 Oct 2013
  */
-public class SpellCheckEngineImplTest {
+public class SpellCheckEngineWordsHistogramsTest {
 
     private SpellCheckEngineImpl engineToTest;
 
     @Before
     public void setUp() throws Exception {
         engineToTest = new SpellCheckEngineImpl();
+        final DictionaryLoader dictionaryLoader = new DictionaryLoader();
+        final Dictionary dictionary = dictionaryLoader.reload("/com/griddynamics/spellcheck/core/dictionary-for-histograms.txt");
+        engineToTest.indexDictionary(dictionary);
     }
 
     @Test
     public void testHistogramsWereLoaded() throws Exception {
-        final DictionaryLoader dictionaryLoader = new DictionaryLoader();
-        final Dictionary dictionary = dictionaryLoader.reload("/com/griddynamics/spellcheck/core/dictionary-for-histograms.txt");
+        final Dictionary dictionary = engineToTest.dictionary;
+        Assert.assertNotNull(dictionary);
+
         final String[] words = dictionary.getWords();
         Assert.assertNotNull(words);
         Assert.assertArrayEquals(new String[]{"browse", "circumstances", "synchronization", "unconstitutional"}, words);
     }
 
     @Test
-    public void testHistogramsWereEncoded() throws Exception {
-        final DictionaryLoader dictionaryLoader = new DictionaryLoader();
-        final Dictionary dictionary = dictionaryLoader.reload("/com/griddynamics/spellcheck/core/dictionary-for-histograms.txt");
-        engineToTest.indexDictionary(dictionary);
-
+    public void testHistogramsForBrowse() throws Exception {
         final long[] histograms = engineToTest.getHistograms();
         Assert.assertNotNull(histograms);
         Assert.assertEquals(4, histograms.length);
@@ -64,6 +64,13 @@ public class SpellCheckEngineImplTest {
 //        mod 16: 14 = 0 => "0000"
 //        mod 16: 15 = 1 => "0001"
         Assert.assertEquals("1"+"0000"+"0000"+"0000"+"0000"+"0000"+"0000"+"0000"+"0001"+"0000"+"0001"+"0000"+"0001"+"0010"+"0000"+"0000", Long.toBinaryString(histograms[0]));
+    }
+
+    @Test
+    public void testHistogramsForCircumstances() throws Exception {
+        final long[] histograms = engineToTest.getHistograms();
+        Assert.assertNotNull(histograms);
+        Assert.assertEquals(4, histograms.length);
 
 //        "circumstances" string
 
@@ -98,7 +105,13 @@ public class SpellCheckEngineImplTest {
 //        mod 16: 14 = 1 => "0001"
 //        mod 16: 15 = 0 => "0000"
         Assert.assertEquals("1"+"0001"+"0000"+"0000"+"0000"+"0001"+"0000"+"0000"+"0000"+"0010"+"0001"+"0101"+"0001"+"0001"+"0000", Long.toBinaryString(histograms[1]));
+    }
 
+    @Test
+    public void testHistogramsForSynchronization() throws Exception {
+        final long[] histograms = engineToTest.getHistograms();
+        Assert.assertNotNull(histograms);
+        Assert.assertEquals(4, histograms.length);
 //        "synchronization" string
 
 //        char=s, ASCII code=115, {mod 16=3}
@@ -134,6 +147,13 @@ public class SpellCheckEngineImplTest {
 //        mod 16: 14 = 3 => "0011"
 //        mod 16: 15 = 2 => "0010"
         Assert.assertEquals("10"+"0011"+"0000"+"0000"+"0000"+"0001"+"0011"+"0001"+"0000"+"0000"+"0000"+"0001"+"0010"+"0001"+"0001"+"0000", Long.toBinaryString(histograms[2]));
+    }
+
+    @Test
+    public void testHistogramsForUnconstitutional() throws Exception {
+        final long[] histograms = engineToTest.getHistograms();
+        Assert.assertNotNull(histograms);
+        Assert.assertEquals(4, histograms.length);
 
 //        "unconstitutional" string
 
@@ -171,6 +191,5 @@ public class SpellCheckEngineImplTest {
 //        mod 16: 14 = 3 => "0011"
 //        mod 16: 15 = 2 => "0010"
         Assert.assertEquals("10"+"0011"+"0000"+"0001"+"0000"+"0000"+"0010"+"0000"+"0000"+"0000"+"0010"+"0011"+"0010"+"0000"+"0001"+"0000", Long.toBinaryString(histograms[3]));
-
     }
 }
