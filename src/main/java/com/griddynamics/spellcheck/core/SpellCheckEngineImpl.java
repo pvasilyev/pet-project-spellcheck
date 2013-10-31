@@ -20,13 +20,11 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
     @Override
     public String[] suggestSimilar(final String word, final int suggestionsNumber, final float accuracy) {
         final ArrayList<Integer> wordsIds = new ArrayList<>(suggestionsNumber * 10);
-//        int[] wordsIds = new int[suggestionsNumber * 10];
-//        int wordPointer = 0;
         final long wordHistogram = BitUtils.encode(word);
-        final int maxEditDist = (int)Math.round(Math.floor((1-accuracy) * word.length()));
+        final int maxEditDist = (int)Math.round(Math.ceil((1-accuracy) * word.length()));
         for (int i = 0; i < histograms.length; i++) {
             long currentHistogram = histograms[i];
-            if (BitUtils.compareTwoHistograms(wordHistogram, currentHistogram) <= maxEditDist) {
+            if (BitUtils.compareTwoHistograms(wordHistogram, currentHistogram) <= 3 * maxEditDist) {
                 wordsIds.add(i);
             }
         }

@@ -30,4 +30,7 @@ public class Dictionary {
         return this.getClass().getResourceAsStream(resourceFileName);
     }
 
+    public int size() {
+        return words.size();
+    }
 }
