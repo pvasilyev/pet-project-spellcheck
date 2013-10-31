@@ -14,7 +14,7 @@ public class DictionaryLoader {
     public static final String RESOURCE_FILE_NAME = "dictionary.txt";
 
     public Dictionary reload(final String resourceFileName) throws IOException {
-        final ArrayList<String> words = new ArrayList<>();
+        final ArrayList<String> words = new ArrayList<String>();
         final BufferedReader input = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(resourceFileName)));
         String next;
         while ((next = input.readLine()) != null) {

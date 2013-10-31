@@ -191,7 +191,7 @@ public class ComparativeSpellCheckTest {
     }
 
     private static abstract class AbstractCharAwareStrategy implements StrategyToMangle {
-        protected ArrayList<Character> charsToInsert = new ArrayList<>();
+        protected ArrayList<Character> charsToInsert = new ArrayList<Character>();
 
         public AbstractCharAwareStrategy() {
             for (int i = 0; i < 26; ++i) {

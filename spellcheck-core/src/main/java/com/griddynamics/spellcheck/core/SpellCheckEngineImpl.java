@@ -18,7 +18,7 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
 
     @Override
     public String[] suggestSimilar(final String word, final int suggestionsNumber, final float accuracy) {
-        final ArrayList<Integer> wordsIds = new ArrayList<>(suggestionsNumber * 10);
+        final ArrayList<Integer> wordsIds = new ArrayList<Integer>(suggestionsNumber * 10);
         final long wordHistogram = BitUtils.encode(word);
         final int maxEditDist = (int)Math.round(Math.ceil((1-accuracy) * word.length()));
         for (int i = 0; i < histograms.length; i++) {
@@ -37,7 +37,7 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
         if (size == 0) {
             return new String[] {};
         }
-        final PriorityQueue<String> result = new PriorityQueue<>(size, new Comparator<String>() {
+        final PriorityQueue<String> result = new PriorityQueue<String>(size, new Comparator<String>() {
             @Override
             public int compare(final String o1, final String o2) {
                 return Float.compare(
