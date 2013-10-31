@@ -1,5 +1,6 @@
 package com.griddynamics.spellcheck.core;
 
+import com.griddynamics.spellcheck.generator.*;
 import com.griddynamics.spellcheck.warehouse.Dictionary;
 import com.griddynamics.spellcheck.warehouse.DictionaryLoader;
 import junit.framework.Assert;
@@ -8,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -20,11 +20,6 @@ import java.util.Random;
 public class ComparativeSpellCheckTest {
 
     private static final float EPS = 1e-6F;
-    private static List<StrategyToMangle> STRATEGIES_TO_MANGLE = Arrays.asList(
-            new RemoveStrategy(),
-            new InsertStrategy(),
-            new SetCharAtStrategy()
-    );
 
     private Dictionary dictionary;
     private SpellCheckEngineImpl engineToTest;
@@ -95,7 +90,7 @@ public class ComparativeSpellCheckTest {
                 continue;
             }
 
-            final String mangled = mangleWordRandomly(wordToMangle, random, minTypos, maxTypos);
+            final String mangled = ManglingUtils.mangleWordRandomly(wordToMangle, random, minTypos, maxTypos);
             String messageFormat = "Engine={0}, For mangled word={1}, Cant find initial value={2}, In suggestions={3}";
 
             final String[] naiveSuggestions = naiveSpellCheckEngine.suggestSimilar(mangled, suggestionsNumber, accuracy);
@@ -154,87 +149,5 @@ public class ComparativeSpellCheckTest {
         return naiveContains;
     }
 
-    private static String mangleWordRandomly(final String wordToMangle, final Random random, final int minTypos, final int maxTypos) {
-        final StringBuilder stringBuilder = new StringBuilder(wordToMangle);
-        int typosToMake = random.nextInt(maxTypos - minTypos) + minTypos;
-        if (wordToMangle.length() <= 3) {
-            return wordToMangle;
-        }
-        if (wordToMangle.length() <= 7) {
-            typosToMake = 1;
-        }
-        for (int i = 0; i < typosToMake; ) {
-            final StrategyToMangle strategyToMangle = STRATEGIES_TO_MANGLE.get(random.nextInt(STRATEGIES_TO_MANGLE.size()));
-            strategyToMangle.mangle(stringBuilder, random);
-            i += strategyToMangle.weight();
-        }
-        return stringBuilder.toString();
-    }
 
-    private static interface StrategyToMangle {
-        StringBuilder mangle(StringBuilder word, Random random);
-
-        int weight();
-    }
-
-    private static final class RemoveStrategy implements StrategyToMangle {
-
-        @Override
-        public StringBuilder mangle(final StringBuilder word, final Random random) {
-            return word.deleteCharAt(random.nextInt(word.length()));
-        }
-
-        @Override
-        public int weight() {
-            return 1;
-        }
-    }
-
-    private static abstract class AbstractCharAwareStrategy implements StrategyToMangle {
-        protected ArrayList<Character> charsToInsert = new ArrayList<Character>();
-
-        public AbstractCharAwareStrategy() {
-            for (int i = 0; i < 26; ++i) {
-                charsToInsert.add((char) ('a' + i));
-            }
-            for (int i = 0; i < 10; ++i) {
-                charsToInsert.add((i + "").toCharArray()[0]);
-            }
-            charsToInsert.addAll(Arrays.asList(' '));
-        }
-    }
-
-    private static final class InsertStrategy extends AbstractCharAwareStrategy {
-
-        @Override
-        public StringBuilder mangle(final StringBuilder word, final Random random) {
-
-            return word.insert(
-                    random.nextInt(word.length()),
-                    charsToInsert.get(random.nextInt(charsToInsert.size()))
-            );
-        }
-
-        @Override
-        public int weight() {
-            return 1;
-        }
-    }
-
-    private static final class SetCharAtStrategy extends AbstractCharAwareStrategy {
-
-        @Override
-        public StringBuilder mangle(final StringBuilder word, final Random random) {
-            word.setCharAt(
-                    random.nextInt(word.length()),
-                    charsToInsert.get(random.nextInt(charsToInsert.size()))
-            );
-            return word;
-        }
-
-        @Override
-        public int weight() {
-            return 2;
-        }
-    }
 }
