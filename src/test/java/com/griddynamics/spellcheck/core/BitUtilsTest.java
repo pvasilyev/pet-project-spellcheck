@@ -3,6 +3,7 @@ package com.griddynamics.spellcheck.core;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 /**
@@ -87,4 +88,37 @@ public class BitUtilsTest {
         }
     }
 
+    @Test
+    public void testTwoHistogramsComparisonIsNotNegative() throws Exception {
+        final Random random = new Random(0xBADBEE);
+        for (int i = 0; i < 100; ++i) {
+            long firstCandidate  = random.nextLong();
+            long secondCandidate = random.nextLong();
+
+            long first  = new BigInteger(Long.toBinaryString(firstCandidate), 2).longValue();
+            long second = new BigInteger(Long.toBinaryString(secondCandidate), 2).longValue();
+            Assert.assertTrue("firstCandidate=" + firstCandidate + "\n"
+                            + "secondCandidate=" + secondCandidate + "\n",
+                    BitUtils.compareTwoHistograms(first, second) >= 0);
+        }
+    }
+
+    @Test
+    public void testTwoHistogramsComparison() throws Exception {
+        long first  = parseLong("0001 0000 0000 0000 0010 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000");
+        long second = parseLong("0001 0000 0000 0000 0010 0000 0000 0000 0000 0001 0000 0000 0000 0000 0000 0000");
+        Assert.assertEquals(2, BitUtils.compareTwoHistograms(first, second));
+
+        first  = parseLong("0001 0000 0000 0000 0010 0000 0000 0000 0000 0100 0000 0000 0000 0100 0000 0000");
+        second = parseLong("0001 0000 0000 0000 0010 0000 0000 0000 0000 0100 0000 0000 0000 0100 0000 0000");
+        Assert.assertEquals(0, BitUtils.compareTwoHistograms(first, second));
+
+        first  = parseLong("1001 0000 0000 0000 0010 0001 0000 0000 0000 0100 0010 0000 0000 0100 0000 0000");
+        second = parseLong("1001 0000 0000 0000 0010 0000 0000 0000 0001 0100 0000 0000 0000 0100 0000 0000");
+        Assert.assertEquals(4, BitUtils.compareTwoHistograms(first, second));
+    }
+
+    private static long parseLong(final String asBinaryString) {
+        return new BigInteger(asBinaryString.replaceAll(" ", ""), 2).longValue();
+    }
 }

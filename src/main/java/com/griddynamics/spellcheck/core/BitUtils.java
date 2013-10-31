@@ -26,8 +26,23 @@ public final class BitUtils {
         for (int i = bits.length-1; i >= 0; i--) {
             result = result << 4;
             final long l = ((bits[i] & (byte)0xF));
-            result = result + l;
+            result = result | l;
         }
+        return result;
+    }
+
+    public static int compareTwoHistograms(final long first, final long second) {
+        // fast check:
+        if (first == second) {
+            return 0;
+        }
+        int result = 0;
+        for (int i = 0; i < MAGIC_CONSTANT; ++i) {
+            byte b1 = (byte) ((first >> i * 4) & 0xF);
+            byte b2 = (byte) ((second >> i * 4) & 0xF);
+            result += Math.abs(b1 - b2);
+        }
+
         return result;
     }
 
