@@ -13,6 +13,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <dependencies>
         <dependency>
             <groupId>com.griddynamics.spellcheck</groupId>
@@ -32,32 +36,73 @@
     </dependencies>
 
     <build>
-        <pluginManagement>
+        <!--<pluginManagement>-->
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.0</version>
                     <configuration>
-                        <encoding>UTF-8</encoding>
-                        <target>1.6</target>
+                        <compilerVersion>1.6</compilerVersion>
                         <source>1.6</source>
+                        <target>1.6</target>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <inherited>true</inherited>
+                    <version>2.14.1</version>
                     <configuration>
-                        <forkMode>once</forkMode>
-                        <enableAssertions>true</enableAssertions>
-                        <includes>
-                            <include>**/Test*.java</include>
-                            <include>**/*Test.java</include>
-                        </includes>
+                        <forkMode>always</forkMode>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>2.0</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <finalName>microbenchmarks</finalName>
+                                <transformers>
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <mainClass>org.openjdk.jmh.Main</mainClass>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!--<plugin>-->
+                    <!--<groupId>com.mycila.maven-license-plugin</groupId>-->
+                    <!--<artifactId>maven-license-plugin</artifactId>-->
+                    <!--<version>1.10.b1</version>-->
+                    <!--<executions>-->
+                        <!--<execution>-->
+                            <!--<goals>-->
+                                <!--<goal>format</goal>-->
+                            <!--</goals>-->
+                            <!--<phase>process-sources</phase>-->
+                            <!--<configuration>-->
+                                <!--<header>file:///${project.basedir}/../src/license/gpl_cpe/header.txt</header>-->
+                                <!--<skipExistingHeaders>false</skipExistingHeaders>-->
+                                <!--<strictCheck>true</strictCheck>-->
+                                <!--<mapping>-->
+                                    <!--<java>PHP</java>-->
+                                <!--</mapping>-->
+                            <!--</configuration>-->
+                        <!--</execution>-->
+                    <!--</executions>-->
+                <!--</plugin>-->
             </plugins>
-        </pluginManagement>
+        <!--</pluginManagement>-->
     </build>
 
 </project>

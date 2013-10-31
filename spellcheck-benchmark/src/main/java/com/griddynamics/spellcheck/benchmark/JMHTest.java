@@ -1,6 +1,7 @@
 package com.griddynamics.spellcheck.benchmark;
 
 import com.griddynamics.spellcheck.core.SpellCheckEngineImpl;
+import com.griddynamics.spellcheck.generator.ManglingUtils;
 import com.griddynamics.spellcheck.warehouse.Dictionary;
 import com.griddynamics.spellcheck.warehouse.DictionaryLoader;
 import org.openjdk.jmh.annotations.*;
@@ -24,62 +25,43 @@ public class JMHTest {
     private static final long SEED = 0xBADBEE;
 
     private SpellCheckEngineImpl engineToTest;
+    private String[] inputQueries;
 
     Random random;
-    long[] array;
-    int guard;
-    int[] result;
     int pointer;
 
     @Setup
     public void setUp() throws IOException {
-        random = new Random(SEED);
-        array = initializeArray();
-        guard = random.nextInt();
-        result = new int[MAX_SIZE];
-        pointer = 0;
-
         engineToTest = new SpellCheckEngineImpl();
         final DictionaryLoader dictionaryLoader = new DictionaryLoader();
         final Dictionary dictionary = dictionaryLoader.reload("/com/griddynamics/spellcheck/warehouse/dictionary.txt");
         engineToTest.indexDictionary(dictionary);
 
+        random = new Random(SEED);
+        inputQueries = generateInputQueries(random, dictionary);
+        pointer = 0;
     }
 
-    private long[] initializeArray() {
-        final long[] longs = new long[MAX_SIZE];
-        for (int i = 0; i < longs.length; i++) {
-            longs[i] = random.nextLong();
+    private String[] generateInputQueries(final Random random, final Dictionary dictionary) {
+        final String[] strings = new String[MAX_SIZE];
+        for (int i = 0; i < strings.length; i++) {
+            final int id = random.nextInt(dictionary.size());
+            strings[i] = ManglingUtils.mangleWordRandomly(dictionary.getWordByID(id), random, 2, 4);
         }
-        return longs;
+        return strings;
     }
 
     @GenerateMicroBenchmark
     @Group("g_1_thread")
-    public int measurePerformance() {
-        pointer = 0;
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] % this.guard == 0) {
-                result[pointer++] = i;
-            }
+    public String[] measurePerformance() {
+        final String[] strings = engineToTest.suggestSimilar(inputQueries[pointer++], 10);
+
+        if (pointer >= MAX_SIZE) {
+            pointer = 0;
         }
 
-        return pointer;
+        return strings;
     }
-
-    @GenerateMicroBenchmark
-    @Group("g_1_thread_inverse")
-    public int measurePerformanceInverse() {
-        pointer = 0;
-        for (int i = array.length-1; i > 0; i--) {
-            if (array[i] % this.guard == 0) {
-                result[pointer++] = i;
-            }
-        }
-
-        return pointer;
-    }
-
 
 }
 
