@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * @since 01 Nov 2013
  */
 @State(Scope.Thread)
-@BenchmarkMode(Mode.AverageTime)
+@BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @Warmup(iterations = 5, time = 5000, timeUnit = TimeUnit.NANOSECONDS)
 @Measurement(iterations = 5, time = 5000, timeUnit = TimeUnit.NANOSECONDS)
