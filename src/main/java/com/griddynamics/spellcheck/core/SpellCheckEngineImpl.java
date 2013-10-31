@@ -3,7 +3,6 @@ package com.griddynamics.spellcheck.core;
 import com.griddynamics.spellcheck.warehouse.Dictionary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -42,8 +41,8 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
             @Override
             public int compare(final String o1, final String o2) {
                 return Float.compare(
-                        levensteinDistance.getDistance(word, o1),
-                        levensteinDistance.getDistance(word, o2)
+                        levensteinDistance.getDistance(word, o2),
+                        levensteinDistance.getDistance(word, o1)
                 );
             }
         });
@@ -56,13 +55,11 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
             }
         }
 
-        String[] resultArray = result.toArray(new String[size]);
-        if (actualSize == size) {
-            return resultArray;
-        } else {
-            return Arrays.copyOf(resultArray, actualSize);
+        String[] resultArray = (new String[actualSize]);
+        for (int i = 0; i < actualSize; ++i) {
+            resultArray[i] = result.poll();
         }
-
+        return resultArray;
     }
 
     @Override

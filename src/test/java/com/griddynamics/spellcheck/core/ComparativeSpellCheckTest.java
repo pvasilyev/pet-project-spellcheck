@@ -3,6 +3,7 @@ package com.griddynamics.spellcheck.core;
 import com.griddynamics.spellcheck.warehouse.Dictionary;
 import com.griddynamics.spellcheck.warehouse.DictionaryLoader;
 import junit.framework.Assert;
+import org.apache.lucene.search.spell.LevensteinDistance;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import java.util.Random;
  */
 public class ComparativeSpellCheckTest {
 
+    private static final float EPS = 1e-6F;
     private static List<StrategyToMangle> STRATEGIES_TO_MANGLE = Arrays.asList(
             new RemoveStrategy(),
             new InsertStrategy(),
@@ -28,7 +30,7 @@ public class ComparativeSpellCheckTest {
     private SpellCheckEngineImpl engineToTest;
     private NaiveSpellCheckEngine naiveSpellCheckEngine;
     private Random random;
-
+    private LevensteinDistance levensteinDistance;
 
     @Before
     public void setUp() throws Exception {
@@ -42,6 +44,7 @@ public class ComparativeSpellCheckTest {
         naiveSpellCheckEngine.indexDictionary(dictionary);
 
         random = new Random(0xBADBEE);
+        levensteinDistance = new LevensteinDistance();
     }
 
     @Test
@@ -99,11 +102,31 @@ public class ComparativeSpellCheckTest {
             final boolean naiveContains = makeAssertionsInNaiveSuggestions(wordToMangle, mangled, messageFormat, naiveSuggestions);
 
             String[] enginesSuggestions = engineToTest.suggestSimilar(mangled, suggestionsNumber, accuracy);
-            boolean contains = makeAssertionsForSpellCheckEngine(weakenAccuracy, suggestionsNumber, wordToMangle, mangled, messageFormat, enginesSuggestions);
+            boolean engineContains = makeAssertionsForSpellCheckEngine(weakenAccuracy, suggestionsNumber, wordToMangle, mangled, messageFormat, enginesSuggestions);
 
             if (naiveContains) {
-                Assert.assertTrue(contains);
+                Assert.assertTrue(engineContains);
             }
+
+            makeFuzzyAssertions(mangled, naiveContains, naiveSuggestions, engineContains, enginesSuggestions);
+        }
+    }
+
+    private void makeFuzzyAssertions(final String word, final boolean naiveContains, final String[] naiveSuggestions, final boolean engineContains, final String[] enginesSuggestions) {
+        if (!naiveContains || !engineContains) {
+            // there is no sense to compare
+            return;
+        }
+        for (int i = 1; i < enginesSuggestions.length; ++i) {
+            Assert.assertTrue(
+                    "Wrong order: " + Arrays.toString(enginesSuggestions),
+                    levensteinDistance.getDistance(word, enginesSuggestions[i - 1])
+                            >
+                            levensteinDistance.getDistance(word, enginesSuggestions[i]) - EPS);
+        }
+        final List<String> enginesSuggestionsAsList = Arrays.asList(enginesSuggestions);
+        for (int i = 0; i < naiveSuggestions.length; ++i) {
+            Assert.assertTrue(enginesSuggestionsAsList.contains(naiveSuggestions[i]));
         }
     }
 
@@ -140,16 +163,17 @@ public class ComparativeSpellCheckTest {
         if (wordToMangle.length() <= 7) {
             typosToMake = 1;
         }
-        for (int i = 0; i < typosToMake;) {
+        for (int i = 0; i < typosToMake; ) {
             final StrategyToMangle strategyToMangle = STRATEGIES_TO_MANGLE.get(random.nextInt(STRATEGIES_TO_MANGLE.size()));
             strategyToMangle.mangle(stringBuilder, random);
             i += strategyToMangle.weight();
         }
-         return stringBuilder.toString();
+        return stringBuilder.toString();
     }
 
     private static interface StrategyToMangle {
         StringBuilder mangle(StringBuilder word, Random random);
+
         int weight();
     }
 
@@ -171,10 +195,10 @@ public class ComparativeSpellCheckTest {
 
         public AbstractCharAwareStrategy() {
             for (int i = 0; i < 26; ++i) {
-                charsToInsert.add((char)('a' + i));
+                charsToInsert.add((char) ('a' + i));
             }
             for (int i = 0; i < 10; ++i) {
-                charsToInsert.add((i+"").toCharArray()[0]);
+                charsToInsert.add((i + "").toCharArray()[0]);
             }
             charsToInsert.addAll(Arrays.asList(' '));
         }
