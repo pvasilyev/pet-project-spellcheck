@@ -71,21 +71,21 @@ public class ComparativeSpellCheckTest {
     }
 
     @Test
-    public void testRandomly7_8_Typos() throws Exception {
+    public void testRandomly7_9_Typos() throws Exception {
         int dictionarySize = dictionary.size();
         final int wordLenThreshold = 11;
         final float accuracy = 0.4F;
         final float weakenAccuracy = 0.2F;
         final int suggestionsNumber = 10;
         final int minTypos = 7;
-        final int maxTypos = 8;
+        final int maxTypos = 9;
 
         runRandomly(dictionarySize, wordLenThreshold, accuracy, weakenAccuracy, suggestionsNumber, minTypos, maxTypos);
     }
 
     private void runRandomly(final int dictionarySize, final int wordLenThreshold, final float accuracy, final float weakenAccuracy,
                              final int suggestionsNumber, final int minTypos, final int maxTypos) {
-        final int iterations = random.nextInt(500) + 200;
+        final int iterations = random.nextInt(500) + 400;
         for (int i = 0; i < iterations; ++i) {
             final String wordToMangle = dictionary.getWordByID(random.nextInt(dictionarySize));
             if (wordToMangle.length() <= wordLenThreshold) {
@@ -111,11 +111,11 @@ public class ComparativeSpellCheckTest {
         Assert.assertNotNull(enginesSuggestions);
         boolean contains = Arrays.asList(enginesSuggestions).contains(wordToMangle);
         if (!contains) {
-            System.err.println("1. First " + MessageFormat.format(messageFormat, "newEngine", mangled, wordToMangle, Arrays.toString(enginesSuggestions)));
+            System.err.println("1. First Check " + MessageFormat.format(messageFormat, "newEngine", mangled, wordToMangle, Arrays.toString(enginesSuggestions)));
             enginesSuggestions = engineToTest.suggestSimilar(mangled, suggestionsNumber, weakenAccuracy);
             contains = Arrays.asList(enginesSuggestions).contains(wordToMangle);
             Assert.assertTrue(
-                    "2. Weaken " + MessageFormat.format(messageFormat, "newEngine", mangled, wordToMangle, Arrays.toString(enginesSuggestions)),
+                    "2. Weaken Check" + MessageFormat.format(messageFormat, "newEngine", mangled, wordToMangle, Arrays.toString(enginesSuggestions)),
                     contains);
         }
         return contains;
