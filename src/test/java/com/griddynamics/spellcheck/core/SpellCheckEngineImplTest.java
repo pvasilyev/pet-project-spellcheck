@@ -2,7 +2,7 @@ package com.griddynamics.spellcheck.core;
 
 import com.griddynamics.spellcheck.warehouse.Dictionary;
 import com.griddynamics.spellcheck.warehouse.DictionaryLoader;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,13 +56,22 @@ public class SpellCheckEngineImplTest {
     }
 
     @Test
-    public void testName() throws Exception {
+    public void testThatLevensteinDistanceRestricts() throws Exception {
         Assert.assertNotNull(engineToTest);
 
         final String[] suggests1 = engineToTest.suggestSimilar("cemzery", 10);
         Assert.assertNotNull(suggests1);
         Assert.assertEquals(1, suggests1.length);
         Assert.assertEquals("cemetery", suggests1[0]);
+    }
 
+    @Test
+    public void testCorrectOrderOfSuggestions() throws Exception {
+        Assert.assertNotNull(engineToTest);
+
+        final String[] suggests = engineToTest.suggestSimilar("test", 10);
+        Assert.assertNotNull(suggests);
+        Assert.assertEquals(2, suggests.length);
+        Assert.assertArrayEquals(new String[]{"test", "tests"}, suggests);
     }
 }
