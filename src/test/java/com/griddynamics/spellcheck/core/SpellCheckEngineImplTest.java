@@ -33,6 +33,15 @@ public class SpellCheckEngineImplTest {
     }
 
     @Test
+    public void testNegativeSpellCheck() throws Exception {
+        Assert.assertNotNull(engineToTest);
+
+        final String[] suggests1 = engineToTest.suggestSimilar("iso", 1);
+        Assert.assertNotNull(suggests1);
+        Assert.assertEquals(0, suggests1.length);
+    }
+
+    @Test
     public void testSpellCheckWithAccuracy() throws Exception {
         Assert.assertNotNull(engineToTest);
 
@@ -50,10 +59,10 @@ public class SpellCheckEngineImplTest {
     public void testName() throws Exception {
         Assert.assertNotNull(engineToTest);
 
-        final String[] suggests1 = engineToTest.suggestSimilar("cub", 10);
+        final String[] suggests1 = engineToTest.suggestSimilar("cemzery", 10);
         Assert.assertNotNull(suggests1);
         Assert.assertEquals(1, suggests1.length);
-        Assert.assertEquals("club", suggests1[0]);
+        Assert.assertEquals("cemetery", suggests1[0]);
 
     }
 }
