@@ -22,6 +22,10 @@ public class Dictionary {
         return words.toArray(strings);
     }
 
+    public String getWordByID(final int id) {
+        return words.get(id);
+    }
+
     public InputStream getDictionaryResource() {
         return this.getClass().getResourceAsStream(resourceFileName);
     }
