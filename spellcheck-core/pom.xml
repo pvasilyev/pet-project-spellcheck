@@ -4,38 +4,26 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.griddynamics.spellcheck</groupId>
-    <artifactId>pet-project-spellcheck-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>spellcheck-core</artifactId>
     <name>${artifactId}</name>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>spellcheck-core</module>
-        <module>spellcheck-benchmark</module>
-    </modules>
+    <parent>
+        <groupId>com.griddynamics.spellcheck</groupId>
+        <artifactId>pet-project-spellcheck-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-    <properties>
-        <lucene.version>4.5.0</lucene.version>
-        <junit.version>4.10</junit.version>
-        <surefire-plugin.version>2.16</surefire-plugin.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-suggest</artifactId>
-                <version>${lucene.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-suggest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <pluginManagement>
@@ -52,7 +40,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${surefire-plugin.version}</version>
+                    <!--<version>${surefire-plugin.version}</version>-->
                     <inherited>true</inherited>
                     <configuration>
                         <forkMode>once</forkMode>
