@@ -1,4 +1,4 @@
-package com.griddynamics.spellcheck.core;
+package com.griddynamics.spellcheck;
 
 import junit.framework.Assert;
 import org.junit.Test;

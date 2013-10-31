@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>spellcheck-utils</module>
         <module>spellcheck-core</module>
         <module>spellcheck-benchmark</module>
     </modules>

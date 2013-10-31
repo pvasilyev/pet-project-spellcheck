@@ -15,6 +15,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.griddynamics.spellcheck</groupId>
+            <artifactId>spellcheck-utils</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-suggest</artifactId>
         </dependency>

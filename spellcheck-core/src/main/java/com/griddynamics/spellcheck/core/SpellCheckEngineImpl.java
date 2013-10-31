@@ -1,5 +1,6 @@
 package com.griddynamics.spellcheck.core;
 
+import com.griddynamics.spellcheck.BitUtils;
 import com.griddynamics.spellcheck.warehouse.Dictionary;
 
 import java.util.ArrayList;

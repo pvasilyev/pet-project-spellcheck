@@ -1,4 +1,4 @@
-package com.griddynamics.spellcheck.core;
+package com.griddynamics.spellcheck;
 
 /**
  * @author pvasilyev
