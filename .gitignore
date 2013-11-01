@@ -41,3 +41,4 @@ target
 .idea
 pet-project-spellcheck.iml
 spellcheck-benchmark/src/main/java/com/griddynamics/spellcheck/benchmark/JMHTest.java
+index

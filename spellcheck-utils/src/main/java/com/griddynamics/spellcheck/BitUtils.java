@@ -12,10 +12,9 @@ public final class BitUtils {
 
     public static long encode(final String word) {
         byte[] bits = new byte[MAGIC_CONSTANT];
-        final char[] chars = word.toCharArray();
 
-        for (int i = 0; i < chars.length; i++) {
-            bits[chars[i] % MAGIC_CONSTANT]++;
+        for (int i = 0; i < word.length(); i++) {
+            bits[word.charAt(i) & (MAGIC_CONSTANT-1)]++;
         }
 
         return encode(bits);

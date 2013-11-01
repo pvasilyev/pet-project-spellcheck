@@ -1,5 +1,6 @@
 package com.griddynamics.spellcheck.benchmark;
 
+import com.griddynamics.spellcheck.core.NaiveSpellCheckEngine;
 import com.griddynamics.spellcheck.core.SpellCheckEngineImpl;
 import com.griddynamics.spellcheck.generator.ManglingUtils;
 import com.griddynamics.spellcheck.warehouse.Dictionary;
@@ -21,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Measurement(iterations = 5, time = 5000, timeUnit = TimeUnit.NANOSECONDS)
 public class JMHTest {
 
-    private static final int MAX_SIZE = 50000;
-    private static final long SEED = 0xBADBEE;
+    private static final int MAX_SIZE = 1000;
 
     private SpellCheckEngineImpl engineToTest;
+    private NaiveSpellCheckEngine luceneEngine;
     private String[] inputQueries;
 
     Random random;
@@ -33,11 +34,13 @@ public class JMHTest {
     @Setup
     public void setUp() throws IOException {
         engineToTest = new SpellCheckEngineImpl();
+        luceneEngine = new NaiveSpellCheckEngine();
         final DictionaryLoader dictionaryLoader = new DictionaryLoader();
         final Dictionary dictionary = dictionaryLoader.reload("/com/griddynamics/spellcheck/warehouse/dictionary.txt");
         engineToTest.indexDictionary(dictionary);
+        luceneEngine.indexDictionary(dictionary);
 
-        random = new Random(SEED);
+        random = new Random();
         inputQueries = generateInputQueries(random, dictionary);
         pointer = 0;
     }
@@ -46,14 +49,14 @@ public class JMHTest {
         final String[] strings = new String[MAX_SIZE];
         for (int i = 0; i < strings.length; i++) {
             final int id = random.nextInt(dictionary.size());
-            strings[i] = ManglingUtils.mangleWordRandomly(dictionary.getWordByID(id), random, 2, 4);
+            strings[i] = ManglingUtils.mangleWordRandomly(dictionary.getWordByID(id), random, 2, 5);
         }
         return strings;
     }
 
     @GenerateMicroBenchmark
-    @Group("g_1_thread")
-    public String[] measurePerformance() {
+    @Group("g_new_thread")
+    public String[] measurePerformance1() {
         final String[] strings = engineToTest.suggestSimilar(inputQueries[pointer++], 10);
 
         if (pointer >= MAX_SIZE) {
@@ -62,6 +65,92 @@ public class JMHTest {
 
         return strings;
     }
+
+
+//    @GenerateMicroBenchmark
+//    @Group("g_new_thread")
+//    public String[] measurePerformance2() {
+//        final String[] strings = engineToTest.suggestSimilar(inputQueries[pointer++], 10);
+//
+//        if (pointer >= MAX_SIZE) {
+//            pointer = 0;
+//        }
+//
+//        return strings;
+//    }
+//
+//    @GenerateMicroBenchmark
+//    @Group("g_new_thread")
+//    public String[] measurePerformance3() {
+//        final String[] strings = engineToTest.suggestSimilar(inputQueries[pointer++], 10);
+//
+//        if (pointer >= MAX_SIZE) {
+//            pointer = 0;
+//        }
+//
+//        return strings;
+//    }
+//
+//    @GenerateMicroBenchmark
+//    @Group("g_new_thread")
+//    public String[] measurePerformance4() {
+//        final String[] strings = engineToTest.suggestSimilar(inputQueries[pointer++], 10);
+//
+//        if (pointer >= MAX_SIZE) {
+//            pointer = 0;
+//        }
+//
+//        return strings;
+//    }
+
+    @GenerateMicroBenchmark
+    @Group("g_lucene_thread")
+    public String[] measureLucenePerformance1() {
+        final String[] strings = luceneEngine.suggestSimilar(inputQueries[pointer++], 10);
+
+        if (pointer >= MAX_SIZE) {
+            pointer = 0;
+        }
+
+        return strings;
+    }
+
+
+//    @GenerateMicroBenchmark
+//    @Group("g_lucene_thread")
+//    public String[] measureLucenePerformance2() {
+//        final String[] strings = luceneEngine.suggestSimilar(inputQueries[pointer++], 10);
+//
+//        if (pointer >= MAX_SIZE) {
+//            pointer = 0;
+//        }
+//
+//        return strings;
+//    }
+//
+//    @GenerateMicroBenchmark
+//    @Group("g_lucene_thread")
+//    public String[] measureLucenePerformance3() {
+//        final String[] strings = luceneEngine.suggestSimilar(inputQueries[pointer++], 10);
+//
+//        if (pointer >= MAX_SIZE) {
+//            pointer = 0;
+//        }
+//
+//        return strings;
+//    }
+//
+//    @GenerateMicroBenchmark
+//    @Group("g_lucene_thread")
+//    public String[] measureLucenePerformance4() {
+//        final String[] strings = luceneEngine.suggestSimilar(inputQueries[pointer++], 10);
+//
+//        if (pointer >= MAX_SIZE) {
+//            pointer = 0;
+//        }
+//
+//        return strings;
+//    }
 
 }
 
