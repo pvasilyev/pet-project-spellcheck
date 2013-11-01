@@ -39,6 +39,9 @@ Thumbs.db
 # Project-related stuff
 target
 .idea
-*.iml
+pet-project-spellcheck-parent.iml
+spellcheck-utils/spellcheck-utils.iml
+spellcheck-core/spellcheck-core.iml
+spellcheck-benchmark/spellcheck-benchmark.iml
 spellcheck-benchmark/src/main/java/com/griddynamics/spellcheck/benchmark/JMHTest.java
 index
