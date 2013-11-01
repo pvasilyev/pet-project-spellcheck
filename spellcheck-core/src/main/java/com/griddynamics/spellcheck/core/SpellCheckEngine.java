@@ -8,9 +8,9 @@ import com.griddynamics.spellcheck.warehouse.Dictionary;
  */
 public interface SpellCheckEngine {
 
-    String[] suggestSimilar(String word, int suggestionsNumber);
+    String[] suggestSimilar(String word, int maxSuggestionsNumber);
 
-    String[] suggestSimilar(String word, int suggestionsNumber, float accuracy);
+    String[] suggestSimilar(String word, int maxSuggestionsNumber, float accuracy);
 
     void indexDictionary(Dictionary dictionary);
 

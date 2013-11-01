@@ -6,3 +6,65 @@ More information you can find here (some useful links):
 * http://wiki.apache.org/lucene-java/SpellChecker
 * http://en.wikipedia.org/wiki/N-gram
 * http://en.wikipedia.org/wiki/Levenshtein_distance
+
+
+Here are some JMH-measurements:
+
+$ java -jar target/microbenchmarks.jar ".*JMHTest.*" -i 10 -r 10s -w 5s
+  # Fork: 1 of 1
+  # Warmup: 5 iterations, 5 s each
+  # Measurement: 10 iterations, 10 s each
+  # Threads: 1 thread, will synchronize iterations
+  # Benchmark mode: Throughput, ops/time
+  # Running: com.griddynamics.spellcheck.benchmark.JMHTest.g_lucene_thread
+  # Warmup Iteration   1: 429.467 ops/s
+  # Warmup Iteration   2: 510.483 ops/s
+  # Warmup Iteration   3: 512.267 ops/s
+  # Warmup Iteration   4: 515.600 ops/s
+  # Warmup Iteration   5: 507.633 ops/s
+  Iteration   1: 508.433 ops/s
+  Iteration   2: 508.083 ops/s
+  Iteration   3: 510.567 ops/s
+  Iteration   4: 511.150 ops/s
+  Iteration   5: 510.417 ops/s
+  Iteration   6: 511.467 ops/s
+  Iteration   7: 505.917 ops/s
+  Iteration   8: 511.950 ops/s
+  Iteration   9: 508.700 ops/s
+  Iteration  10: 506.217 ops/s
+
+  Result: 509.290 ?(95%) 1.537 ?(99%) 2.208 ops/s
+    Statistics: (min, avg, max) = (505.917, 509.290, 511.950), stdev = 2.148
+    Confidence intervals: 95% [507.753, 510.827], 99% [507.082, 511.498]
+
+
+  # Fork: 1 of 1
+  # Warmup: 5 iterations, 5 s each
+  # Measurement: 10 iterations, 10 s each
+  # Threads: 1 thread, will synchronize iterations
+  # Benchmark mode: Throughput, ops/time
+  # Running: com.griddynamics.spellcheck.benchmark.JMHTest.g_new_thread
+  # Warmup Iteration   1: 109.283 ops/s
+  # Warmup Iteration   2: 110.117 ops/s
+  # Warmup Iteration   3: 111.683 ops/s
+  # Warmup Iteration   4: 109.300 ops/s
+  # Warmup Iteration   5: 111.817 ops/s
+  Iteration   1: 110.733 ops/s
+  Iteration   2: 111.367 ops/s
+  Iteration   3: 111.300 ops/s
+  Iteration   4: 111.733 ops/s
+  Iteration   5: 110.167 ops/s
+  Iteration   6: 111.633 ops/s
+  Iteration   7: 112.133 ops/s
+  Iteration   8: 111.367 ops/s
+  Iteration   9: 111.700 ops/s
+  Iteration  10: 111.867 ops/s
+
+  Result: 111.400 ?(95%) 0.412 ?(99%) 0.592 ops/s
+    Statistics: (min, avg, max) = (110.167, 111.400, 112.133), stdev = 0.576
+    Confidence intervals: 95% [110.988, 111.812], 99% [110.808, 111.992]
+
+
+  Benchmark                           Mode Thr    Cnt  Sec         Mean   Mean error    Units
+  c.g.s.b.JMHTest.g_lucene_thread    thrpt   1     10   10      509.290        2.208    ops/s
+  c.g.s.b.JMHTest.g_new_thread       thrpt   1     10   10      111.400        0.592    ops/s

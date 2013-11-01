@@ -74,7 +74,7 @@ public class ComparativeSpellCheckTest {
         final int wordLenThreshold = 11;
         final float accuracy = 0.4F;
         final float weakenAccuracy = 0.2F;
-        final int suggestionsNumber = 10;
+        final int suggestionsNumber = 20;
         final int minTypos = 7;
         final int maxTypos = 9;
 

@@ -17,51 +17,53 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
     private long[] histograms;
 
     @Override
-    public String[] suggestSimilar(final String word, final int suggestionsNumber, final float accuracy) {
+    public String[] suggestSimilar(final String word, final int maxSuggestionsNumber, final float accuracy) {
         final long wordHistogram = BitUtils.encode(word);
-        final int maxEditDist = (int)Math.round(Math.ceil((1-accuracy) * word.length()));
+        final int maxEditDist = 2 * (int) Math.round(Math.ceil((1 - accuracy) * word.length()));
 
-        final int maxQueueSize = 10 * suggestionsNumber;
-        final PriorityQueue<HistogramDistancePair> queue = new PriorityQueue<HistogramDistancePair>(maxQueueSize, new Comparator<HistogramDistancePair>() {
+        final int maxQueueSize = 20 * maxSuggestionsNumber;
+        final PriorityQueue<HistogramDistancePair> bestHistograms = new PriorityQueue<HistogramDistancePair>(maxQueueSize, new Comparator<HistogramDistancePair>() {
             @Override
             public int compare(final HistogramDistancePair o1, final HistogramDistancePair o2) {
                 final int x = o1.distance;
                 final int y = o2.distance;
-                return (x < y) ? -1 : ((x == y) ? 0 : 1);
+                return (x < y) ? 1 : ((x == y) ? 0 : -1);
             }
         });
-        final int i1 = 2 * maxEditDist;
         for (int i = 0; i < histograms.length; i++) {
             long currentHistogram = histograms[i];
             final int hashDistance = BitUtils.compareTwoHistograms(wordHistogram, currentHistogram);
-            if (hashDistance <= i1) {
-                queue.offer(new HistogramDistancePair(i, hashDistance));
+            if (hashDistance <= maxEditDist) {
+                bestHistograms.offer(new HistogramDistancePair(i, hashDistance));
+                if (bestHistograms.size() > maxQueueSize) {
+                    bestHistograms.poll();
+                }
             }
         }
 
-//        System.err.println("Word length=" + word.length() + ", maxEditDist=" + maxEditDist + ", found wordIds=" + wordsIds.size());
-        return postProcess(word, suggestionsNumber, accuracy, queue);
+//        System.err.println("Word length=" + word.length() + ", maxEditDist=" + maxEditDist + ", found wordIds=" + bestHistograms.size());
+        return postProcess(word, maxSuggestionsNumber, accuracy, bestHistograms);
     }
 
     private String[] postProcess(final String word, final int maxSuggestionsNumber,
-                                          final float accuracy, final PriorityQueue<HistogramDistancePair> wordsIds) {
-        final int wordIdsSize = wordsIds.size();
-        final int size = Math.min(maxSuggestionsNumber, wordIdsSize);
+                                 final float accuracy, final PriorityQueue<HistogramDistancePair> bestHistograms) {
+        final int numberOfBestHistograms = bestHistograms.size();
+        final int size = Math.min(maxSuggestionsNumber, numberOfBestHistograms);
 
         if (size == 0) {
-            return new String[] {};
+            return new String[]{};
         }
-        WordDistancePair[] pairs = new WordDistancePair[wordIdsSize];
-        for (int i = 0; i < wordIdsSize; i++) {
-            final String currentWord = dictionary.getWordByID(wordsIds.poll().id);
+        WordDistancePair[] pairs = new WordDistancePair[numberOfBestHistograms];
+        for (int i = 0; i < numberOfBestHistograms; i++) {
+            final String currentWord = dictionary.getWordByID(bestHistograms.poll().id);
             final float distance = levensteinDistance.getDistance(word, currentWord);
 //            System.err.println("Levenstein Distance: source=" + word + ", target=" + currentWord + ", dist=" + distance);
-            pairs[i]  = new WordDistancePair(currentWord, distance);
+            pairs[i] = new WordDistancePair(currentWord, distance);
         }
         final PriorityQueue<WordDistancePair> queue = new PriorityQueue<WordDistancePair>(size, new Comparator<WordDistancePair>() {
             @Override
             public int compare(final WordDistancePair o1, final WordDistancePair o2) {
-                return Float.compare(o2.distance, o1.distance);
+                return Float.compare(o1.distance, o2.distance);
             }
         });
 
@@ -70,10 +72,13 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
             if (pairs[i].distance > accuracy - EPS) {
                 queue.offer(pairs[i]);
                 actualSize++;
+                if (queue.size() > size && actualSize > size) {
+                    queue.poll();
+                }
             }
         }
-        String[] resultArray = new String[actualSize];
-        for (int i = 0; i < resultArray.length; i++) {
+        String[] resultArray = new String[Math.min(actualSize, size)];
+        for (int i = resultArray.length - 1; i >= 0; i--) {
             resultArray[i] = queue.poll().word;
         }
         return resultArray;

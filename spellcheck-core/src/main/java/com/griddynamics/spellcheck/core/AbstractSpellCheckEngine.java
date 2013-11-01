@@ -20,7 +20,7 @@ public abstract class AbstractSpellCheckEngine implements SpellCheckEngine {
     }
 
     @Override
-    public String[] suggestSimilar(final String word, final int suggestionsNumber) {
-        return suggestSimilar(word, suggestionsNumber, DEFAULT_ACCURACY);
+    public String[] suggestSimilar(final String word, final int maxSuggestionsNumber) {
+        return suggestSimilar(word, maxSuggestionsNumber, DEFAULT_ACCURACY);
     }
 }
