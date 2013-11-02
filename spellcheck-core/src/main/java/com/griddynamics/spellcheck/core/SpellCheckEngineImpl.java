@@ -21,7 +21,7 @@ public class SpellCheckEngineImpl extends AbstractSpellCheckEngine {
         final long wordHistogram = BitUtils.encode(word);
         final int maxEditDist = 2 * (int) Math.round(Math.ceil((1 - accuracy) * word.length()));
 
-        final int maxQueueSize = 20 * maxSuggestionsNumber;
+        final int maxQueueSize = 10 * maxSuggestionsNumber;
         final PriorityQueue<HistogramDistancePair> bestHistograms = new PriorityQueue<HistogramDistancePair>(maxQueueSize, new Comparator<HistogramDistancePair>() {
             @Override
             public int compare(final HistogramDistancePair o1, final HistogramDistancePair o2) {
