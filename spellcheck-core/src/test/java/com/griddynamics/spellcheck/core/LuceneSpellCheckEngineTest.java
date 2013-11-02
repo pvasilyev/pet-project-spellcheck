@@ -10,13 +10,13 @@ import org.junit.Test;
  * @author pvasilyev
  * @since 29 Oct 2013
  */
-public class NaiveSpellCheckEngineTest {
+public class LuceneSpellCheckEngineTest {
 
-    private NaiveSpellCheckEngine engineToTest;
+    private LuceneSpellCheckEngine engineToTest;
 
     @Before
     public void setUp() throws Exception {
-        engineToTest = new NaiveSpellCheckEngine();
+        engineToTest = new LuceneSpellCheckEngine();
         final DictionaryLoader dictionaryLoader = new DictionaryLoader();
         final Dictionary dictionary = dictionaryLoader.reload("spellcheck.txt");
         engineToTest.indexDictionary(dictionary);

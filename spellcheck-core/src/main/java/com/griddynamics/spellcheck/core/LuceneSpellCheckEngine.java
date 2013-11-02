@@ -14,11 +14,11 @@ import java.io.IOException;
  * @author pvasilyev
  * @since 29 Oct 2013
  */
-public class NaiveSpellCheckEngine extends AbstractSpellCheckEngine {
+public class LuceneSpellCheckEngine extends AbstractSpellCheckEngine {
 
     private SpellChecker spellChecker;
 
-    public NaiveSpellCheckEngine() throws IOException {
+    public LuceneSpellCheckEngine() throws IOException {
         final Directory directory = new RAMDirectory();
         spellChecker = new SpellChecker(directory, levensteinDistance);
     }

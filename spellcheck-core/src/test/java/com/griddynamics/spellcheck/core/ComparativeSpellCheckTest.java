@@ -23,20 +23,20 @@ public class ComparativeSpellCheckTest {
 
     private Dictionary dictionary;
     private SpellCheckEngineImpl engineToTest;
-    private NaiveSpellCheckEngine naiveSpellCheckEngine;
+    private LuceneSpellCheckEngine luceneSpellCheckEngine;
     private Random random;
     private LevensteinDistance levensteinDistance;
 
     @Before
     public void setUp() throws Exception {
         engineToTest = new SpellCheckEngineImpl();
-        naiveSpellCheckEngine = new NaiveSpellCheckEngine();
+        luceneSpellCheckEngine = new LuceneSpellCheckEngine();
 
         final DictionaryLoader dictionaryLoader = new DictionaryLoader();
         dictionary = dictionaryLoader.reload("/com/griddynamics/spellcheck/warehouse/spellcheck.txt");
 
         engineToTest.indexDictionary(dictionary);
-        naiveSpellCheckEngine.indexDictionary(dictionary);
+        luceneSpellCheckEngine.indexDictionary(dictionary);
 
         random = new Random(0xBADBEE);
         levensteinDistance = new LevensteinDistance();
@@ -93,22 +93,22 @@ public class ComparativeSpellCheckTest {
             final String mangled = ManglingUtils.mangleWordRandomly(wordToMangle, random, minTypos, maxTypos);
             String messageFormat = "Engine={0}, For mangled word={1}, Cant find initial value={2}, In suggestions={3}";
 
-            final String[] naiveSuggestions = naiveSpellCheckEngine.suggestSimilar(mangled, suggestionsNumber, accuracy);
-            final boolean naiveContains = makeAssertionsInNaiveSuggestions(wordToMangle, mangled, messageFormat, naiveSuggestions);
+            final String[] luceneSuggestions = luceneSpellCheckEngine.suggestSimilar(mangled, suggestionsNumber, accuracy);
+            final boolean luceneContains = makeAssertionsInLuceneSuggestions(wordToMangle, mangled, messageFormat, luceneSuggestions);
 
             String[] enginesSuggestions = engineToTest.suggestSimilar(mangled, suggestionsNumber, accuracy);
             boolean engineContains = makeAssertionsForSpellCheckEngine(weakenAccuracy, suggestionsNumber, wordToMangle, mangled, messageFormat, enginesSuggestions);
 
-            if (naiveContains) {
+            if (luceneContains) {
                 Assert.assertTrue(engineContains);
             }
 
-            makeFuzzyAssertions(mangled, naiveContains, naiveSuggestions, engineContains, enginesSuggestions);
+            makeFuzzyAssertions(mangled, luceneContains, luceneSuggestions, engineContains, enginesSuggestions);
         }
     }
 
-    private void makeFuzzyAssertions(final String word, final boolean naiveContains, final String[] naiveSuggestions, final boolean engineContains, final String[] enginesSuggestions) {
-        if (!naiveContains || !engineContains) {
+    private void makeFuzzyAssertions(final String word, final boolean luceneContains, final String[] luceneSuggestions, final boolean engineContains, final String[] enginesSuggestions) {
+        if (!luceneContains || !engineContains) {
             // there is no sense to compare
             return;
         }
@@ -120,8 +120,8 @@ public class ComparativeSpellCheckTest {
                             levensteinDistance.getDistance(word, enginesSuggestions[i]) - EPS);
         }
         final List<String> enginesSuggestionsAsList = Arrays.asList(enginesSuggestions);
-        for (int i = 0; i < naiveSuggestions.length; ++i) {
-            Assert.assertTrue(enginesSuggestionsAsList.contains(naiveSuggestions[i]));
+        for (int i = 0; i < luceneSuggestions.length; ++i) {
+            Assert.assertTrue(enginesSuggestionsAsList.contains(luceneSuggestions[i]));
         }
     }
 
@@ -139,14 +139,14 @@ public class ComparativeSpellCheckTest {
         return contains;
     }
 
-    private boolean makeAssertionsInNaiveSuggestions(final String wordToMangle, final String mangled, final String messageFormat, final String[] naiveSuggestions) {
-        Assert.assertNotNull(naiveSuggestions);
+    private boolean makeAssertionsInLuceneSuggestions(final String wordToMangle, final String mangled, final String messageFormat, final String[] luceneSuggestions) {
+        Assert.assertNotNull(luceneSuggestions);
 
-        final boolean naiveContains = Arrays.asList(naiveSuggestions).contains(wordToMangle);
-        if (!naiveContains) {
-            System.err.println(MessageFormat.format(messageFormat, "naive", mangled, wordToMangle, Arrays.toString(naiveSuggestions)));
+        final boolean luceneContains = Arrays.asList(luceneSuggestions).contains(wordToMangle);
+        if (!luceneContains) {
+            System.err.println(MessageFormat.format(messageFormat, "lucene", mangled, wordToMangle, Arrays.toString(luceneSuggestions)));
         }
-        return naiveContains;
+        return luceneContains;
     }
 
 

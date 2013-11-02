@@ -1,6 +1,6 @@
 package com.griddynamics.spellcheck.benchmark;
 
-import com.griddynamics.spellcheck.core.NaiveSpellCheckEngine;
+import com.griddynamics.spellcheck.core.LuceneSpellCheckEngine;
 import com.griddynamics.spellcheck.core.SpellCheckEngineImpl;
 import com.griddynamics.spellcheck.generator.ManglingUtils;
 import com.griddynamics.spellcheck.warehouse.Dictionary;
@@ -25,7 +25,7 @@ public class JMHTest {
     private static final int MAX_SIZE = 1000;
 
     private SpellCheckEngineImpl engineToTest;
-    private NaiveSpellCheckEngine luceneEngine;
+    private LuceneSpellCheckEngine luceneEngine;
     private String[] inputQueries;
 
     Random random;
@@ -34,7 +34,7 @@ public class JMHTest {
     @Setup
     public void setUp() throws IOException {
         engineToTest = new SpellCheckEngineImpl();
-        luceneEngine = new NaiveSpellCheckEngine();
+        luceneEngine = new LuceneSpellCheckEngine();
         final DictionaryLoader dictionaryLoader = new DictionaryLoader();
         final Dictionary dictionary = dictionaryLoader.reload("/com/griddynamics/spellcheck/warehouse/dictionary.txt");
         engineToTest.indexDictionary(dictionary);
