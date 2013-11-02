@@ -1,0 +1,17 @@
+This file describes how to build this application and contains list of system requirements.
+
+System Requirements:
+* Java >= 1.6
+* Maven 3 (because JMH test needs that)
+
+How to Build:
+* Execute 'mvn clean install' in the root directory of the sources
+
+How to run JMH test:
+* You will need to have JMH sources 1.0-SNAPSHOT version
+* Tou can download JMH sources from http://hg.openjdk.java.net/code-tools/jmh/ (Mercurial repository)
+* Simply 'mvn clean install' in the root directory of JMH sources to have jmh compiled
+* To run spellcheck-benchmark:
+** Execute 'mvn clean install' in the spellcheck-benchmark module
+** Run something like : 'java -jar target/microbenchmarks.jar ".*JMHTest.*" -i 10 -r 10s -w 5s'
+** For more information type 'java -jar target/microbenchmarks.jar ".*JMHTest.*" -help'
