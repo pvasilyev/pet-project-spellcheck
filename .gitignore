@@ -45,3 +45,4 @@ spellcheck-core/spellcheck-core.iml
 spellcheck-benchmark/spellcheck-benchmark.iml
 spellcheck-benchmark/src/main/java/com/griddynamics/spellcheck/benchmark/JMHTest.java
 index
+spellcheck-core/src/main/resources/com/griddynamics/spellcheck/warehouse/dictionary-copy.txt
